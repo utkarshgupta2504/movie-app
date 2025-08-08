@@ -79,12 +79,19 @@ class DatabaseHelper {
 
   Future<List<Movie>> getMoviesByCategory(String category) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'movies',
-      where: 'category = ?',
-      whereArgs: [category],
-      orderBy: 'created_at DESC',
-    );
+    List<Map<String, dynamic>> maps;
+
+    if (category == "all") {
+      // Fetch all movies
+      maps = await db.query('movies', orderBy: 'created_at DESC');
+    } else {
+      maps = await db.query(
+        'movies',
+        where: 'category = ?',
+        whereArgs: [category],
+        orderBy: 'created_at DESC',
+      );
+    }
 
     return maps.map((map) => _mapToMovie(map)).toList();
   }

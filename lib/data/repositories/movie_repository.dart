@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:movie_app/core/utils/toast.dart';
 import '../api/tmdb_api_service.dart';
 import '../database/database_helper.dart';
 import '../models/movie.dart';
@@ -41,8 +42,10 @@ class MovieRepository {
       }
     } catch (e, st) {
       AppLogger.e('getTrendingMovies failed', e, st);
-      // Log error without print in production
-      throw Exception('Failed to load trending movies: $e');
+      AppToast.error(
+        null,
+        'Failed to load trending movies, loading offline results',
+      );
     }
     return await _databaseHelper.getMoviesByCategory('trending');
   }
@@ -70,8 +73,10 @@ class MovieRepository {
       }
     } catch (e, st) {
       AppLogger.e('getNowPlayingMovies failed', e, st);
-      // Log error without print in production
-      throw Exception('Failed to load now playing movies: $e');
+      AppToast.error(
+        null,
+        'Failed to load now playing movies, loading offline results',
+      );
     }
 
     return await _databaseHelper.getMoviesByCategory('now_playing');
@@ -94,8 +99,7 @@ class MovieRepository {
       }
     } catch (e, st) {
       AppLogger.e('searchMovies failed', e, st);
-      // Log error without print in production
-      throw Exception('Failed to search movies: $e');
+      AppToast.error(null, 'Failed to search movies, loading offline results');
     }
     return await _databaseHelper.searchMoviesLocal(query);
   }
@@ -115,10 +119,13 @@ class MovieRepository {
       }
     } catch (e, st) {
       AppLogger.e('getMovieDetails failed', e, st);
-      // Log error without print in production
-      throw Exception('Failed to get movie details: $e');
+      AppToast.error(
+        null,
+        'Failed to load movie details, loading offline results',
+      );
     }
-    final localMovies = await _databaseHelper.getMoviesByCategory('details');
+
+    final localMovies = await _databaseHelper.getMoviesByCategory('all');
     return localMovies.firstWhere(
       (movie) => movie.id == movieId,
       orElse: () => throw Exception('Movie not found'),

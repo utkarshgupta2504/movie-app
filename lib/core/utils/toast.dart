@@ -3,7 +3,7 @@ import 'package:toastification/toastification.dart';
 import '../theme/app_colors.dart';
 
 class AppToast {
-  static void error(BuildContext context, String message, {String? title}) {
+  static void error(BuildContext? context, String message, {String? title}) {
     toastification.show(
       context: context,
       type: ToastificationType.error,
@@ -21,7 +21,7 @@ class AppToast {
     );
   }
 
-  static void success(BuildContext context, String message, {String? title}) {
+  static void success(BuildContext? context, String message, {String? title}) {
     toastification.show(
       context: context,
       type: ToastificationType.success,
@@ -39,7 +39,7 @@ class AppToast {
     );
   }
 
-  static void info(BuildContext context, String message, {String? title}) {
+  static void info(BuildContext? context, String message, {String? title}) {
     toastification.show(
       context: context,
       type: ToastificationType.info,
