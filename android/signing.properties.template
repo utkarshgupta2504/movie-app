@@ -1,0 +1,13 @@
+# Signing Configuration Template
+# Copy this file to gradle.properties and update with your actual values
+# DO NOT commit actual passwords to version control
+
+# Signing configs for movie-app keystore
+MOVIE_APP_KEY_ALIAS=your_key_alias
+MOVIE_APP_KEY_PASSWORD=your_key_password
+MOVIE_APP_STORE_PASSWORD=your_store_password
+
+# For production builds, consider using environment variables:
+# MOVIE_APP_KEY_ALIAS=${MOVIE_APP_KEY_ALIAS}
+# MOVIE_APP_KEY_PASSWORD=${MOVIE_APP_KEY_PASSWORD}  
+# MOVIE_APP_STORE_PASSWORD=${MOVIE_APP_STORE_PASSWORD}
