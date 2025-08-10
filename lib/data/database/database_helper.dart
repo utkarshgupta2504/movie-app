@@ -8,9 +8,13 @@ class DatabaseHelper {
   DatabaseHelper._internal();
 
   static Database? _database;
+  final Set<int> _bookmarkedMovieIds = <int>{};
 
   Future<Database> get database async {
-    _database ??= await _initDatabase();
+    if (_database == null) {
+      _database = await _initDatabase();
+      await _loadBookmarkedMovies();
+    }
     return _database!;
   }
 
@@ -50,11 +54,28 @@ class DatabaseHelper {
     ''');
   }
 
+  Future<void> _loadBookmarkedMovies() async {
+    final db = await _database!;
+    final List<Map<String, dynamic>> bookmarkedMovies = await db.query(
+      'movies',
+      columns: ['id'],
+      where: 'is_bookmarked = ?',
+      whereArgs: [1],
+    );
+
+    _bookmarkedMovieIds.clear();
+    for (final movie in bookmarkedMovies) {
+      _bookmarkedMovieIds.add(movie['id'] as int);
+    }
+  }
+
   Future<void> insertMovies(List<Movie> movies, String category) async {
     final db = await database;
     final batch = db.batch();
 
     for (final movie in movies) {
+      final isBookmarked = _bookmarkedMovieIds.contains(movie.id) ? 1 : 0;
+
       batch.insert('movies', {
         'id': movie.id,
         'title': movie.title,
@@ -69,6 +90,7 @@ class DatabaseHelper {
         'original_title': movie.originalTitle,
         'popularity': movie.popularity,
         'video': movie.video ? 1 : 0,
+        'is_bookmarked': isBookmarked,
         'category': category,
         'created_at': DateTime.now().millisecondsSinceEpoch,
       }, conflictAlgorithm: ConflictAlgorithm.replace);
@@ -125,24 +147,28 @@ class DatabaseHelper {
     );
 
     if (existing.isNotEmpty) {
-      final isBookmarked = existing.first['is_bookmarked'] == 1;
+      final isCurrentlyBookmarked = _bookmarkedMovieIds.contains(movieId);
+      final newBookmarkStatus = isCurrentlyBookmarked ? 0 : 1;
+
       await db.update(
         'movies',
-        {'is_bookmarked': isBookmarked ? 0 : 1},
+        {'is_bookmarked': newBookmarkStatus},
         where: 'id = ?',
         whereArgs: [movieId],
       );
+
+      // Update in-memory cache
+      if (isCurrentlyBookmarked) {
+        _bookmarkedMovieIds.remove(movieId);
+      } else {
+        _bookmarkedMovieIds.add(movieId);
+      }
     }
   }
 
   Future<bool> isMovieBookmarked(int movieId) async {
-    final db = await database;
-    final List<Map<String, dynamic>> result = await db.query(
-      'movies',
-      where: 'id = ? AND is_bookmarked = ?',
-      whereArgs: [movieId, 1],
-    );
-    return result.isNotEmpty;
+    await database; // Ensure database is initialized
+    return _bookmarkedMovieIds.contains(movieId);
   }
 
   Future<List<Movie>> searchMoviesLocal(String query) async {
