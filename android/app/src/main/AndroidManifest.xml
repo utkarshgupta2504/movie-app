@@ -35,6 +35,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https"
                       android:host="utkarshg.is-a.dev" />
+                <data android:pathPattern="/movie/.*" />
             </intent-filter>
             <!-- Custom URL Scheme -->
             <intent-filter>

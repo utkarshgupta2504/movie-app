@@ -125,11 +125,8 @@ class MovieRepository {
       );
     }
 
-    final localMovies = await _databaseHelper.getMoviesByCategory('all');
-    return localMovies.firstWhere(
-      (movie) => movie.id == movieId,
-      orElse: () => throw Exception('Movie not found'),
-    );
+    final localMovie = await _databaseHelper.getMovieById(movieId);
+    return localMovie;
   }
 
   Future<List<Movie>> getBookmarkedMovies() async {
