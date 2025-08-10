@@ -128,10 +128,11 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                         onPressed: () {
                           viewModel.toggleBookmark();
                           bookmarkViewModel.toggleBookmark(movie);
-
+                          // Show toast notification
+                          // Opposite because we are toggling
                           AppToast.info(
                             context,
-                            viewModel.isBookmarked
+                            !viewModel.isBookmarked
                                 ? '${movie.title} added to bookmarks'
                                 : '${movie.title} removed from bookmarks',
                           );

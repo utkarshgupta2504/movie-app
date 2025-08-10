@@ -86,9 +86,7 @@ class MovieDetailViewModel extends ChangeNotifier {
 
     try {
       final uri = Uri.parse(youtubeUrl);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      }
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (e, st) {
       _error = 'Failed to open trailer';
       AppLogger.e('openTrailer failed', e, st);
